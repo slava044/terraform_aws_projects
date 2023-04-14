@@ -1,40 +1,30 @@
-locals {
-  public_cidr  = ["10.0.0.0/21", "10.0.128.0/17", "10.0.0.0/17", "10.0.128.0/18"]
-  private_cidr = ["10.0.32.0/19", "10.0.64.0/18", "10.0.192.0/19", "10.0.224.0/20"]
-
-}
-
-
-
-
-
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr_block
   tags = {
-    Name = "main"
+    Name = "${var.env_prefix}-vpc"
   }
 }
 
 resource "aws_subnet" "public" {
-  count = length(local.public_cidr)
+  count = length(var.public_subnet_cidr)
 
   vpc_id     = aws_vpc.main.id
-  cidr_block = local.public_cidr[count.index]
+  cidr_block = var.public_subnet_cidr[count.index]
 
   tags = {
-    Name = "Public.${count.index}"
+    Name = "${var.env_prefix}-pub_sub${count.index + 1}"
   }
 }
 
 
 
 resource "aws_subnet" "private" {
-  count = length(local.private_cidr)
+  count = length(var.private_subnet_cidr)
 
   vpc_id     = aws_vpc.main.id
-  cidr_block = local.private_cidr[count.index]
+  cidr_block = var.private_subnet_cidr[count.index]
   tags = {
-    Name = "Private.${count.index}"
+    Name = "${var.env_prefix}-private_sub${count.index + 1}"
   }
 }
 
@@ -43,15 +33,15 @@ resource "aws_subnet" "private" {
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "main"
+    Name = "${var.env_prefix}-int_gate"
   }
 }
 resource "aws_eip" "nat" {
-  count = length(local.public_cidr)
+  count = length(var.private_subnet_cidr)
 
   vpc = true
   tags = {
-    Name = "Nat.${count.index}"
+    Name = "${var.env_prefix}-nat${count.index}"
   }
 }
 
@@ -59,12 +49,13 @@ resource "aws_eip" "nat" {
 
 
 resource "aws_nat_gateway" "main" {
-  count         = length(local.public_cidr)
+  count = length(var.public_subnet_cidr)
+
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = aws_subnet.public[count.index].id
 
   tags = {
-    Name = "main${count.index}"
+    Name = "${var.env_prefix}-nat${count.index}"
   }
 }
 
@@ -78,12 +69,12 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "public"
+    Name = "${var.env_prefix}"
   }
 }
 
 resource "aws_route_table" "private" {
-  count  = length(local.private_cidr)
+  count  = length(var.private_subnet_cidr)
   vpc_id = aws_vpc.main.id
 
   route {
@@ -92,14 +83,14 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name = "private${count.index}"
+    Name = "${var.env_prefix}-private-rt"
   }
 }
 
 
 
 resource "aws_route_table_association" "public" {
-  count = length(local.public_cidr)
+  count = length(var.public_subnet_cidr)
 
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
@@ -108,10 +99,9 @@ resource "aws_route_table_association" "public" {
 
 
 resource "aws_route_table_association" "private" {
-  count          = length(local.private_cidr)
+  count = length(var.private_subnet_cidr)
+
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
 
 }
-
-
