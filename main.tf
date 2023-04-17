@@ -1,5 +1,6 @@
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr_block
+  
   tags = {
     Name = "${var.env_prefix}-vpc"
   }
@@ -23,6 +24,7 @@ resource "aws_subnet" "private" {
 
   vpc_id     = aws_vpc.main.id
   cidr_block = var.private_subnet_cidr[count.index]
+
   tags = {
     Name = "${var.env_prefix}-private_sub${count.index + 1}"
   }
@@ -32,6 +34,7 @@ resource "aws_subnet" "private" {
 
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
+
   tags = {
     Name = "${var.env_prefix}-int_gate"
   }
@@ -87,8 +90,6 @@ resource "aws_route_table" "private" {
   }
 }
 
-
-
 resource "aws_route_table_association" "public" {
   count = length(var.public_subnet_cidr)
 
@@ -97,7 +98,6 @@ resource "aws_route_table_association" "public" {
 
 }
 
-
 resource "aws_route_table_association" "private" {
   count = length(var.private_subnet_cidr)
 
@@ -105,3 +105,4 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private[count.index].id
 
 }
+
