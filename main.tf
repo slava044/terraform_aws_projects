@@ -24,8 +24,6 @@ resource "aws_subnet" "public" {
   }
 }
 
-
-
 resource "aws_subnet" "private" {
   count = length(var.private_subnet_cidr)
 
@@ -38,8 +36,6 @@ resource "aws_subnet" "private" {
   }
 }
 
-
-
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
@@ -47,8 +43,6 @@ resource "aws_internet_gateway" "main" {
     Name = "main"
   }
 }
-
-
 
 resource "aws_eip" "nat" {
   count = length(var.private_subnet_cidr)
@@ -61,9 +55,6 @@ resource "aws_eip" "nat" {
   }
 }
 
-
-
-
 resource "aws_nat_gateway" "main" {
   count = length(var.public_subnet_cidr)
 
@@ -74,8 +65,6 @@ resource "aws_nat_gateway" "main" {
     Name = "${var.env_prefix}-nat${count.index}"
   }
 }
-
-
 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
@@ -104,8 +93,6 @@ resource "aws_route_table" "private" {
 
   }
 }
-
-
 
 resource "aws_route_table_association" "public" {
   count = length(var.public_subnet_cidr)
