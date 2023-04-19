@@ -13,18 +13,18 @@ resource "aws_subnet" "public" {
   cidr_block = var.public_subnet_cidr[count.index]
 
   tags = {
-    Name = "${var.env_prefix}-pub_sub${count.index + 1}"
+    Name = "${var.env_prefix}-pub${count.index + 1}"
   }
 }
 
 resource "aws_subnet" "private" {
   count = length(var.private_subnet_cidr)
 
-  vpc_id     = aws_vpc.main.i
+  vpc_id     = aws_vpc.main.id
   cidr_block = var.private_subnet_cidr[count.index]
 
   tags = {
-    Name = "${var.env_prefix}-private_sub${count.index + 1}"
+    Name = "${var.env_prefix}-private${count.index + 1}"
 
   }
 }
@@ -82,7 +82,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name = "${var.env_prefix}-private-rt"
+    Name = "${var.env_prefix}-private"
 
   }
 }
@@ -102,3 +102,5 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private[count.index].id
 
 }
+
+
