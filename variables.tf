@@ -12,3 +12,6 @@ variable "private_subnet_cidr" {
 variable "env_prefix" {
 
 }
+
+
+
