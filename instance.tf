@@ -1,17 +1,17 @@
-resource "aws_instance" "public_instance" {
+resource "aws_instance" "public" {
   ami                         = "ami-06e46074ae430fba6"
   associate_public_ip_address = true
   instance_type               = "t2.micro"
   key_name                    = "project_key"
-  vpc_security_group_ids      = [aws_security_group.pub_sec_group.id]
+  vpc_security_group_ids      = [aws_security_group.public.id]
   subnet_id                   = aws_subnet.public[1].id
   tags = {
-    Name = "${var.env_prefix}-pub_instance"
+    Name = "${var.env_prefix}-public"
   }
 }
 
-resource "aws_security_group" "pub_sec_group" {
-  name        = "${var.env_prefix}-sec_group"
+resource "aws_security_group" "public" {
+  name        = "${var.env_prefix}-secgroup"
   description = "Allow ssh inbound "
   vpc_id      = aws_vpc.main.id
 
@@ -31,26 +31,23 @@ resource "aws_security_group" "pub_sec_group" {
   }
 
   tags = {
-    Name = "${var.env_prefix}-public_sec_group"
+    Name = "${var.env_prefix}-public"
   }
 }
 
-
-
-
-resource "aws_instance" "private_instance" {
+resource "aws_instance" "private" {
   ami                         = "ami-06e46074ae430fba6"
   instance_type               = "t2.micro"
   key_name                    = "project_key"
-  vpc_security_group_ids      = [aws_security_group.private_sec_group.id]
+  vpc_security_group_ids      = [aws_security_group.private.id]
   subnet_id                   = aws_subnet.private[1].id
   tags = {
-    Name = "${var.env_prefix}-private_instance"
+    Name = "${var.env_prefix}-private"
   }
 }
 
-resource "aws_security_group" "private_sec_group" {
-  name        = "${var.env_prefix}-priv_group"
+resource "aws_security_group" "private" {
+  name        = "${var.env_prefix}-private"
   description = "Allow ssh inbound "
   vpc_id      = aws_vpc.main.id
 
@@ -70,6 +67,7 @@ resource "aws_security_group" "private_sec_group" {
   }
 
   tags = {
-    Name = "${var.env_prefix}-private_sec_group"
+    Name = "${var.env_prefix}-private"
   }
 }
+
