@@ -49,6 +49,7 @@ resource "aws_internet_gateway" "main" {
     Name = "main"
   }
 }
+
 resource "aws_eip" "nat0" {
   vpc = true
 
@@ -64,7 +65,6 @@ resource "aws_eip" "nat1" {
     Name = "nat1"
   }
 }
-
 
 resource "aws_nat_gateway" "main0" {
   allocation_id = aws_eip.nat0.id
