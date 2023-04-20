@@ -5,6 +5,7 @@ resource "aws_instance" "public" {
   key_name                    = "project_key"
   vpc_security_group_ids      = [aws_security_group.public.id]
   subnet_id                   = aws_subnet.public[1].id
+  
   tags = {
     Name = "${var.env_prefix}-public"
   }
@@ -41,6 +42,7 @@ resource "aws_instance" "private" {
   key_name                    = "project_key"
   vpc_security_group_ids      = [aws_security_group.private.id]
   subnet_id                   = aws_subnet.private[1].id
+  
   tags = {
     Name = "${var.env_prefix}-private"
   }
