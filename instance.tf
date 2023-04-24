@@ -1,27 +1,37 @@
+data "aws_ami" "amazonLinux" {
+  owners           = ["amazon"]
+  most_recent      = true 
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-kernel-*-x86_64-gp2"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 resource "aws_instance" "public" {
-  ami                         = "ami-06e46074ae430fba6"
+  ami                         = data.aws_ami.amazonLinux.id
   associate_public_ip_address = true
   instance_type               = "t2.micro"
-  key_name                    = "project_key"
+  key_name                    = "class.pem"
   vpc_security_group_ids      = [aws_security_group.public.id]
   subnet_id                   = aws_subnet.public[1].id
-<<<<<<< HEAD
   tags = {
     Name = "${var.env_prefix}-pub"
-=======
-  
-  tags = {
-    Name = "${var.env_prefix}-public"
->>>>>>> 31326bf36201431586b0f236e5f32001b6b99d02
   }
 }
 
 resource "aws_security_group" "public" {
-<<<<<<< HEAD
   name        = "${var.env_prefix}-sec_group"
-=======
-  name        = "${var.env_prefix}-secgroup"
->>>>>>> 31326bf36201431586b0f236e5f32001b6b99d02
   description = "Allow ssh inbound "
   vpc_id      = aws_vpc.main.id
 
@@ -45,25 +55,15 @@ resource "aws_security_group" "public" {
   }
 }
 
-<<<<<<< HEAD
 
 
 
 resource "aws_instance" "private" {
-  ami                    = "ami-06e46074ae430fba6"
+  ami                    = data.aws_ami.amazonLinux.id
   instance_type          = "t2.micro"
-  key_name               = "project_key"
+  key_name               = "class.pem"
   vpc_security_group_ids = [aws_security_group.private.id]
   subnet_id              = aws_subnet.private[1].id
-=======
-resource "aws_instance" "private" {
-  ami                         = "ami-06e46074ae430fba6"
-  instance_type               = "t2.micro"
-  key_name                    = "project_key"
-  vpc_security_group_ids      = [aws_security_group.private.id]
-  subnet_id                   = aws_subnet.private[1].id
-  
->>>>>>> 31326bf36201431586b0f236e5f32001b6b99d02
   tags = {
     Name = "${var.env_prefix}-private"
   }
